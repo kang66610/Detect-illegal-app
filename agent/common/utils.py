@@ -3,7 +3,7 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet
 
-from backend.app.config import PROJECT_ROOT, config
+from agent.common.settings import PROJECT_ROOT, config
 
 
 def sha256_of_file(path: Path) -> str:

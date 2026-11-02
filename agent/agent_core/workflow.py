@@ -27,10 +27,13 @@ from agent.detection_engines.external_static import ExternalStaticAnalysisHub, F
 from agent.rule_engine.scenario_plan import scenario_plan_for_probe
 from agent.ai_explorer.runtime_state import DetectionRunState, ProbePhase
 from agent.common.utils import decrypt_to_temp, get_or_create_fernet_key
-from backend.app.config import PROJECT_ROOT, config
-from backend.app.db import SessionLocal
-from backend.app.models import DetectionTask
-from backend.app.services.artifact_cleanup import delete_task_artifacts
+from agent.common.backend_ports import (
+    PROJECT_ROOT,
+    DetectionTask,
+    SessionLocal,
+    config,
+    delete_task_artifacts,
+)
 
 logger = get_logger("workflow")
 

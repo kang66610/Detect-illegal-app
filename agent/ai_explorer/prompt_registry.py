@@ -13,7 +13,7 @@ from pathlib import Path
 
 import yaml
 
-from backend.app.config import PROJECT_ROOT
+from agent.common.settings import PROJECT_ROOT
 
 _PROMPTS_DIR = PROJECT_ROOT / "agent" / "config" / "prompts"
 _NAVIGATION_PROMPT_PATH = _PROMPTS_DIR / "navigation.yaml"

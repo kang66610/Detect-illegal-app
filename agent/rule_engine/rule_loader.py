@@ -4,7 +4,7 @@ import yaml
 from pydantic import BaseModel
 
 from agent.common.exceptions import RuleConfigError
-from backend.app.config import PROJECT_ROOT
+from agent.common.settings import PROJECT_ROOT
 
 _RULES_PATH = PROJECT_ROOT / "agent" / "config" / "rules" / "identification_method_rules.yaml"
 

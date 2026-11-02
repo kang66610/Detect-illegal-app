@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from backend.app.config import PROJECT_ROOT, config
+from agent.common.settings import PROJECT_ROOT, config
 
 _LOG_DIR = PROJECT_ROOT / config["storage"]["log_dir"]
 _LOG_DIR.mkdir(parents=True, exist_ok=True)

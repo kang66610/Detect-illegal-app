@@ -5,7 +5,7 @@ import re
 
 import yaml
 
-from backend.app.config import PROJECT_ROOT
+from agent.common.settings import PROJECT_ROOT
 
 _FEATURES_PATH = PROJECT_ROOT / "agent" / "config" / "sdk_features.yaml"
 

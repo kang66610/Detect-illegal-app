@@ -10,7 +10,7 @@ from agent.detection_engines.base import DetectionContext, Finding
 from agent.detection_engines.policy_analyzer import _policy_source, policy_discloses_withdraw_path
 from agent.detection_engines.static_analyzer import DANGEROUS_PERMISSIONS, list_native_libs
 from agent.detection_engines.ui_roles import personalization_mentioned
-from backend.app.config import PROJECT_ROOT
+from agent.common.settings import PROJECT_ROOT
 
 _INDUSTRY_PATH = PROJECT_ROOT / "agent" / "config" / "industry_permissions.yaml"
 _DELETE_TERMS = ("注销", "删除个人信息", "更正个人信息", "账号注销", "注销账号")

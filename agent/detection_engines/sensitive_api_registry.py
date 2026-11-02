@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from backend.app.config import PROJECT_ROOT
+from agent.common.settings import PROJECT_ROOT
 
 _REGISTRY_PATH = PROJECT_ROOT / "agent" / "config" / "sensitive_apis.yaml"
 

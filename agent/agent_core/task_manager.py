@@ -4,7 +4,7 @@ from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from agent.common.exceptions import TaskStateError
-from backend.app.models import DetectionTask
+from agent.common.backend_ports import DetectionTask
 
 STATUS_FLOW = {
     "queued": {"preparing", "paused", "canceled"},

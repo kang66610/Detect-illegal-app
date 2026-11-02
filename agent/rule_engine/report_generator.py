@@ -10,8 +10,13 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy.orm import Session
 
 from agent.rule_engine.rule_matcher import MatchedViolation
-from backend.app.config import PROJECT_ROOT, config
-from backend.app.models import Evidence, Report, Violation
+from agent.common.backend_ports import (
+    PROJECT_ROOT,
+    Evidence,
+    Report,
+    Violation,
+    config,
+)
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -231,8 +236,11 @@ def generate_report(session: Session, task, apk, matched: list[MatchedViolation]
     summary["quality_metrics"] = build_quality_metrics(
         matched, evidence_files, ctx.runtime, baseline,
     )
-    from backend.app.models.review import ReviewItem, ServerAuditEvent
-    from backend.app.services.review_service import derive_server_audit_review_states
+    from agent.common.backend_ports import (
+        ReviewItem,
+        ServerAuditEvent,
+        derive_server_audit_review_states,
+    )
     review_states = {
         row.legal_key: row.status for row in session.query(ReviewItem).filter_by(task_id=task.id).all()
     }

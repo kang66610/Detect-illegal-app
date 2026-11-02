@@ -40,5 +40,25 @@ jobs:
       - name: Install Playwright chromium
         run: python -m playwright install --with-deps chromium
 
+      # 把失败用例名写成 annotation，这样不用登录也能从 API 定位问题；
+      # 同时保留完整日志给需要看细节的人。
       - name: Run tests
-        run: python -m pytest -q
+        run: |
+          set +e
+          python -m pytest -q --tb=short > pytest.log 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            grep -E "^(FAILED|ERROR) " pytest.log | head -20 | sed 's/^/::error::/' || true
+            echo "----- pytest output tail -----"
+            tail -60 pytest.log
+          else
+            tail -3 pytest.log
+          fi
+          exit "$status"
+
+      - name: Upload pytest log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-log
+          path: pytest.log

@@ -9,7 +9,10 @@
 ## 目录结构
 
 ```
-agent/                  检测引擎本体，不被 backend 反向依赖
+agent/                  检测引擎本体
+│  └─ common/settings.py, common/backend_ports.py
+│                        唯一允许知道 backend 的两个适配模块，由
+│                        test_layering_contract.py 守护，其余模块一律不许直接 import backend
 ├─ agent_core/          任务状态机、六阶段管线编排、失败分类、审计契约
 ├─ ai_explorer/         Appium + LLM 页面遍历引擎
 │  ├─ explorer_engine.py   主遍历循环（有行数门禁，见模块化契约测试）
