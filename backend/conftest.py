@@ -25,4 +25,8 @@ def pytest_configure(config):
     if getattr(config.option, "basetemp", None):
         return  # 命令行显式指定时以命令行为准
     base = PROJECT_ROOT / "tmp" / f"pytest-run-{os.getpid()}"
+    # tmp/ 被 .gitignore 忽略，干净 clone（CI）里并不存在；
+    # 不先建父目录，pytest 会在创建 basetemp 时抛 FileNotFoundError，
+    # 表现为上百个用例的 fixture 全部 error。
+    base.parent.mkdir(parents=True, exist_ok=True)
     config.option.basetemp = str(base)
