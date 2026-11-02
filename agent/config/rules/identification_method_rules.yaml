@@ -1,0 +1,349 @@
+# 对标《App违法违规收集使用个人信息行为认定方法》（国信办秘字〔2019〕191号）。
+# 官方正文按第一至第六条划分六大类；第六类同时涵盖删除/更正功能与投诉、举报方式。
+# conditions 全部满足才命中；op 支持 eq/ne/gt/gte/lt/lte/contains/not_exists。
+score_base: 100
+category_names:
+  1: 未公开收集使用规则
+  2: 未明示收集使用个人信息的目的、方式和范围
+  3: 未经用户同意收集使用个人信息
+  4: 违反必要原则，收集与其提供的服务无关的个人信息
+  5: 未经同意向他人提供个人信息
+  6: 未按法律规定提供删除或更正个人信息功能，或未公布投诉、举报方式等信息
+rules:
+  # 第一条：未公开收集使用规则
+  - rule_id: RULE_1_1
+    rule_name: 未公开收集使用规则（无隐私政策）
+    category: 1
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第一条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: policy_missing, op: eq, value: true}
+    evidence_fields: [policy]
+    suggestion: 应在 App 首次启动或设置页显著位置公开隐私政策（收集使用规则），并取得用户同意。
+  - rule_id: RULE_1_2
+    rule_name: 隐私政策入口不可达
+    category: 1
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第一条第（三）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: policy_entry_not_found, op: eq, value: true}
+    evidence_fields: [screenshot]
+    suggestion: 隐私政策入口应常驻设置页并可正常打开，避免进入 App 主界面后超过 4 次点击才能访问。
+  - rule_id: RULE_1_3
+    rule_name: 访问隐私政策入口超过 4 次点击
+    category: 1
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第一条第（三）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: policy_entry_exceeds_four_clicks, op: eq, value: true}
+      - {field: click_count, op: gt, value: 4}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 应将隐私政策入口置于首次启动页、设置页等显著位置，确保从应用主界面进入不超过 4 次点击。
+  - rule_id: RULE_1_2_NOTICE
+    rule_name: 首次运行未通过显著方式提示阅读收集使用规则
+    category: 1
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第一条第（二）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: first_run_notice_missing, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 首次启动时应通过弹窗、全屏提示等显著方式提示用户阅读隐私政策，而不能仅在设置页隐藏入口。
+
+  # 第二条：未明示目的、方式和范围
+  - rule_id: RULE_2_1
+    rule_name: 未逐一列出收集使用个人信息的目的、方式、范围
+    category: 2
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第二条第（一）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: purpose_not_disclosed, op: eq, value: true}
+    evidence_fields: [policy]
+    suggestion: 应在隐私政策中逐一列出（含第三方 SDK）收集使用个人信息的目的、方式和范围。
+  - rule_id: RULE_2_2
+    rule_name: 申请可收集个人信息权限时未同步告知目的
+    category: 2
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第二条第（三）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: permission_purpose_not_informed, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 申请打开可收集个人信息的权限时，应同步、明确告知用户收集目的。
+  - rule_id: RULE_2_1_SDK
+    rule_name: 第三方 SDK 实际收集的个人信息未在规则中逐项披露
+    category: 2
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第二条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: sdk_collection_not_disclosed, op: eq, value: true}
+    evidence_fields: [callstack, behavior_ledger, consistency_matrix]
+    suggestion: 在隐私政策中按第三方 SDK 分别说明实际收集的信息类型、目的、方式和范围，并与动态调用记录核对。
+
+  # 第三条：未经用户同意收集使用个人信息
+  - rule_id: RULE_3_1
+    rule_name: 同意前调用敏感隐私 API
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: api_called_before_consent, op: eq, value: true}
+    evidence_fields: [callstack, behavior_ledger, timeline]
+    suggestion: 所有个人信息收集应在用户首次明确同意之后进行，检查启动流程中 SDK 初始化时机。
+  - rule_id: RULE_3_2
+    rule_name: 实际收集的个人信息超出用户授权范围
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（三）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: collected_beyond_authorization, op: eq, value: true}
+    evidence_fields: [callstack, traffic]
+    suggestion: 实际收集的信息不得超出用户授权范围；超出部分应停止采集或单独取得同意。
+  - rule_id: RULE_3_REFUSE
+    rule_name: 拒绝权限后仍收集个人信息或开启权限
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（二）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: api_called_after_permission_denial, op: eq, value: true}
+    evidence_fields: [callstack, behavior_ledger, timeline]
+    suggestion: 用户拒绝权限后应停止对应个人信息收集，不得继续调用相关敏感 API 或反复索权。
+  - rule_id: RULE_3_REREQUEST
+    rule_name: 拒绝权限后再次索要同一权限
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（二）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: permission_rerequest_after_denial, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 用户明确拒绝后，不应在同一检测会话中反复弹出同一权限申请。
+  - rule_id: RULE_3_4
+    rule_name: 以默认勾选方式取得个人信息收集同意
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（四）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: consent_checkbox_prechecked, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 涉及个人信息收集使用的同意选项应默认不勾选，并由用户主动、明确选择。
+  - rule_id: RULE_3_8
+    rule_name: 未提供撤回同意收集个人信息的途径
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（八）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: withdraw_consent_unavailable, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 应在应用内提供撤回同意或关闭授权的有效入口，并在隐私政策中明示操作路径。
+  - rule_id: RULE_3_6
+    rule_name: 利用个人信息进行定向推送时未提供非定向选项
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（六）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: targeted_push_no_opt_out, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 若使用个人信息进行定向推送或个性化推荐，应同时提供关闭定向/个性化的选项。
+  - rule_id: RULE_3_7
+    rule_name: 以欺骗误导方式取得同意
+    category: 3
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第三条第（七）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: misleading_consent_copy, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 同意按钮应使用明确的同意语义，不得以领取福利、一键开启全部权限等文案误导用户。
+
+  # 第四条：违反必要原则
+  - rule_id: RULE_4_1
+    rule_name: 申请权限与所属行业必要权限不匹配
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（一）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: permission_industry_mismatch, op: eq, value: true}
+    evidence_fields: [permission_list]
+    suggestion: 仅申请与业务功能直接相关的权限，删除与核心功能无关的危险权限。
+  - rule_id: RULE_4_4
+    rule_name: 超频次收集个人信息
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（四）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: frequent_collection, op: eq, value: true}
+      - {field: count, op: gte, value: 5}
+    evidence_fields: [callstack, behavior_ledger, timeline]
+    suggestion: 限制敏感信息采集频次，仅在用户主动触发对应功能时采集。
+  - rule_id: RULE_4_1_CONSENT
+    rule_name: 同意隐私政策后未进入业务功能即申请个人信息权限
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: permission_requested_immediately_after_consent, op: eq, value: true}
+      - {field: after_consent_ms, op: lte, value: 30000}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 不应在用户仅同意隐私政策后即批量申请与当前业务功能无关的权限；应在用户主动使用相应功能时再申请并说明目的。
+  - rule_id: RULE_4_2
+    rule_name: 用户拒绝非必要权限后业务功能被阻断
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（二）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: permission_denial_blocks_function, op: eq, value: true}
+      - {field: probe_action, op: eq, value: deny}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 对非实现当前功能所必需的权限，用户拒绝后仍应允许继续使用相应基础服务；如确有必要，应说明具体功能关联。
+  - rule_id: RULE_4_5
+    rule_name: 以改善服务、提升体验为由强制同意
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（五）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: forced_consent_for_service_improvement, op: eq, value: true}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 不得以改善服务、提升用户体验为由强制用户同意收集非必要个人信息；应允许拒绝后仍使用基本功能。
+  - rule_id: RULE_4_6
+    rule_name: 同意隐私政策后集中申请多个个人信息权限
+    category: 4
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第四条第（六）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: multiple_permissions_requested_after_consent, op: eq, value: true}
+      - {field: count, op: gte, value: 2}
+    evidence_fields: [screenshot, timeline]
+    suggestion: 应在用户主动使用具体功能时，逐项申请相应权限；不得以一次同意隐私政策为由集中申请多个无当前业务关联的权限。
+
+  # 第五条：未经同意向他人提供个人信息
+  - rule_id: RULE_5_1
+    rule_name: 向境外传输个人信息
+    category: 5
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第五条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: overseas_transfer, op: eq, value: true}
+    evidence_fields: [traffic, callstack, behavior_ledger]
+    suggestion: 确需向境外提供个人信息时，应完成安全评估并单独取得用户同意。
+  - rule_id: RULE_5_2
+    rule_name: 第三方 SDK 传输数据未在隐私政策披露
+    category: 5
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第五条第（一）点
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: sdk_upload_undisclosed, op: eq, value: true}
+    evidence_fields: [traffic, sdk_list]
+    suggestion: 应在隐私政策的第三方共享清单中披露 SDK 名称、收集信息及用途。
+
+  # 第六条：删除、更正、注销与投诉举报
+  - rule_id: RULE_6_1
+    rule_name: 未提供账号注销或删除个人信息入口
+    category: 6
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第六条第（一）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: no_delete_entry, op: eq, value: true}
+    evidence_fields: [screenshot]
+    suggestion: 应提供账号注销、删除或更正个人信息入口，并在处理后及时删除或匿名化相关信息。
+  - rule_id: RULE_6_2
+    rule_name: 删除、更正或注销流程设置不合理条件
+    category: 6
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第六条第（二）点
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: delete_obstacle, op: eq, value: true}
+    evidence_fields: [screenshot]
+    suggestion: 删除、更正或注销不得要求不必要的线下办理、收费或超出必要范围的信息。
+  - rule_id: RULE_6_3
+    rule_name: 未公布投诉举报渠道
+    category: 6
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第六条第（五）点
+    risk_level: 低
+    weight: 3
+    conditions:
+      - {field: no_complaint_channel, op: eq, value: true}
+    evidence_fields: [policy, screenshot]
+    suggestion: 应在帮助页或关于页公布真实可用的个人信息安全投诉、举报渠道。
+  - rule_id: RULE_6_4
+    rule_name: 公布的投诉举报联系方式无效
+    category: 6
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第六条第（五）点
+    risk_level: 低
+    weight: 3
+    conditions:
+      - {field: invalid_contact_format, op: eq, value: true}
+    evidence_fields: [policy, screenshot]
+    suggestion: 应核对公布的客服电话位数与邮箱格式，确保投诉举报渠道真实可用。
+  - rule_id: RULE_6_5
+    rule_name: 投诉举报渠道未说明处理时效
+    category: 6
+    legal_basis: 《App违法违规收集使用个人信息行为认定方法》第六条第（五）点
+    risk_level: 低
+    weight: 3
+    conditions:
+      - {field: complaint_processing_time_missing, op: eq, value: true}
+    evidence_fields: [policy, screenshot]
+    suggestion: 应明确个人信息安全投诉、举报的受理方式、处理流程和反馈时限。
+  - rule_id: RULE_EXT_ASSOC_START
+    rule_name: 未明示且未经同意发生关联启动
+    category: 3
+    legal_basis: 扩展检测项（关联启动），不替代《认定方法》31 项结论
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: associated_start, op: eq, value: true}
+    evidence_fields: [timeline]
+    suggestion: 不得在用户未点击、未授权的情况下拉起其他应用；关联启动应明示目的并取得同意。
+  - rule_id: RULE_EXT_KEEPALIVE
+    rule_name: 后台保活期间收集个人信息
+    category: 4
+    legal_basis: 扩展检测项（后台保活收集），不替代《认定方法》31 项结论
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: background_collection, op: eq, value: true}
+    evidence_fields: [callstack, timeline]
+    suggestion: 进入后台后应停止与当前功能无关的个人信息收集，避免保活进程持续读取设备标识或位置。
+  - rule_id: RULE_EXT_SENSITIVE_MARK
+    rule_name: 隐私政策中的敏感个人信息未作显著标识
+    category: 2
+    legal_basis: 扩展检测项（《个人信息保护法》第二十八至第三十条告知与严格保护要求），不替代《认定方法》31项结论
+    risk_level: 中
+    weight: 8
+    conditions:
+      - {field: sensitive_information_not_emphasized, op: eq, value: true}
+    evidence_fields: [policy]
+    suggestion: 对身份证件、生物识别、医疗健康、金融账户、行踪轨迹等敏感个人信息采用加粗、下划线、颜色或独立段落等显著方式，并说明处理必要性及对个人权益的影响。
+  - rule_id: RULE_EXT_LOGIN_DATA_PROTECTION
+    rule_name: 登录或认证数据通过明文 HTTP 传输
+    category: 5
+    legal_basis: 扩展检测项（登录数据传输安全），不替代《认定方法》31项结论或服务端存储审计
+    risk_level: 高
+    weight: 15
+    conditions:
+      - {field: login_data_unprotected, op: eq, value: true}
+      - {field: transport, op: eq, value: http}
+    evidence_fields: [traffic, callstack]
+    suggestion: 登录、验证码、口令、令牌等认证数据必须通过 TLS 加密传输；不得将凭据放入明文 URL，日志与证据中也应脱敏。

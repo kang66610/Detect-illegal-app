@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-08-27T11:56:26.289Z",
+  "sessionId": "sess_22ad3218-79bd-4e7e-91ac-b1fb7d880599",
+  "event": "PostToolUse",
+  "toolName": "Write",
+  "file": "D:\\Detect illegal app\\tmp\\adb_if_probe.ps1",
+  "outcome": "clear",
+  "coverage": "complete",
+  "findingCount": 0,
+  "durationMs": 5,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

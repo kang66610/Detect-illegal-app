@@ -1,0 +1,2 @@
+{"schema_version":1,"type":"header"}
+{"type":"page","facts":{"system_camera":true},"is_root":false,"proposals":[{"action":"click","target":"快门","reason":"继续探索","source":"llm","priority":999}]}

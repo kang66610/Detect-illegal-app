@@ -1,0 +1,102 @@
+version: 2
+description: >-
+  企业级回归基准清单。expected_rule_ids 仅来自人工报告明确结论；
+  不把人工结论注入自动报告。缺少隔离 APK 的样本只保存标签，不参与门禁。
+quality_gate:
+  minimum_recall: 0.90
+  minimum_precision: 0.80
+  maximum_forbidden_hits: 0
+  minimum_stability: 0.95
+  minimum_required_coverage: 0.90
+  minimum_macro_recall: 0.90
+  minimum_held_out_recall: 0.80
+cases:
+  - case_id: case-travel-reviewed-202608
+    package_name: com.example.travel
+    artifact_ref: apk-library://sha256/ad357f9130a2d32812dc4b8e2e1dbffe6c1d2297b58efb806bdb72097b0fd5ce
+    execution_status: executable
+    source_report: 案例C-App违法违规收集使用个人信息检测.docx
+    repeats: 3
+    expected_rule_ids: [RULE_2_1_SDK, RULE_2_2, RULE_4_1_CONSENT, RULE_4_2]
+    forbidden_rule_ids: []
+    required_legal_keys: ["2.1", "2.3", "4.1", "4.2"]
+    source_findings:
+      - 申请可收集个人信息权限时未同步告知目的
+      - 同意隐私政策后立即申请与当前业务无关的权限
+      - 拒绝非必要权限后业务功能被阻断
+      - 未逐一披露嵌入 SDK 收集信息的目的、方式和范围
+
+  - case_id: case-socialsecurity-reviewed-202608
+    package_name: com.example.socialsecurity
+    artifact_ref: apk-library://sha256/370c479740f650fe66f6f496f80ff9af711201e59ddc5efb38a6b32bb4f0b099
+    execution_status: executable
+    source_report: 案例S-App违法违规收集使用个人信息检测报告.docx
+    repeats: 3
+    expected_rule_ids: [RULE_1_1, RULE_3_1, RULE_3_2]
+    forbidden_rule_ids: []
+    required_legal_keys: ["1.1", "3.1", "3.3"]
+    source_findings:
+      - 隐私政策链接存在但实际无法访问收集使用规则
+      - 同意隐私政策前开始收集个人信息
+      - 实际收集 MAC 地址和 Android ID 超出授权范围
+
+  - case_id: case-news-reviewed-202608
+    package_name: ""
+    artifact_ref: ""
+    execution_status: artifact_missing
+    source_report: 案例D-App违法违规收集使用个人信息检测报.docx
+    expected_rule_ids: [RULE_2_2, RULE_3_1, RULE_4_4]
+    required_legal_keys: ["2.3", "3.1", "4.4"]
+    source_findings:
+      - 未明示且未经同意发生关联启动（当前规则库尚无直接规则）
+      - 每次进入示例学车及返回均读取剪贴板，超过最低必要频率
+      - 登录未勾选隐私政策前即收集验证码
+      - 实名认证处理敏感信息时告知目的不明确且未单独同意
+
+  - case_id: case-bank-reviewed-202608
+    package_name: ""
+    artifact_ref: ""
+    execution_status: artifact_missing
+    source_report: 案例J-App违法违规收集使用个人信息.docx
+    expected_rule_ids: [RULE_4_1]
+    required_legal_keys: ["4.1"]
+    source_findings:
+      - 处理敏感个人信息未单独征得同意（当前 191 号规则映射外扩展项）
+      - 提前获取与当前业务功能无关的位置权限
+      - 未尽到收集不满十四周岁未成年人信息责任（扩展法律项）
+
+  - case_id: case-dialer-reviewed-202608
+    package_name: ""
+    artifact_ref: ""
+    execution_status: artifact_missing
+    source_report: 案例F-App违法违规收集使用个人信息检.docx
+    expected_rule_ids: [RULE_3_2, RULE_3_4, RULE_4_4, RULE_6_1]
+    required_legal_keys: ["3.3", "3.4", "4.4", "6.1"]
+    source_findings:
+      - 验证码登录未勾选隐私政策即可发送验证码，构成默认同意
+      - 隐私政策未明示查询、更正和删除个人信息的操作方法
+      - 获取通讯录权限时上传全部通讯录，超出授权范围
+      - 后台收集 MAC 地址，超出业务实际需要
+
+  - case_id: case-dating-reviewed-202608
+    package_name: ""
+    artifact_ref: ""
+    execution_status: artifact_missing
+    source_report: 案例A-App违法违规收集使用个人信息.docx
+    expected_rule_ids: [RULE_4_4]
+    required_legal_keys: ["4.4"]
+    source_findings:
+      - 后台保活期间私自收集 Android ID
+      - 未明示、未经同意且无合理场景频繁自启动（当前规则库尚无直接规则）
+
+  - case_id: case-reader-reviewed-202608
+    package_name: com.example.reader
+    artifact_ref: ""
+    execution_status: artifact_missing
+    source_report: 案例K-App违法违规收集使用个人信息检测报告.docx
+    expected_rule_ids: [RULE_4_2, RULE_3_8, RULE_2_1_SDK]
+    required_legal_keys: ["4.2", "3.8", "2.1"]
+    source_findings:
+      - 拒绝非必要权限后无法使用
+      - 无撤回同意途径
+      - 嵌入阿里云反馈 SDK 收集 IMSI 未充分披露

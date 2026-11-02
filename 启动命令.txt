@@ -1,0 +1,20 @@
+在项目根目录 `D:\Detect illegal app` 打开三个 PowerShell 窗口：
+
+powershell
+# 窗口 1：API
+.venv\Scripts\python scripts\run_api.py
+
+
+powershell
+# 窗口 2：检测 Worker
+.venv\Scripts\python scripts\run_worker.py
+
+
+powershell
+# 窗口 3：前端开发服务
+cd frontend
+npm run dev
+
+
+模拟设备：
+D:\Android\Sdk\emulator\emulator.exe -avd Pixel_7_Root

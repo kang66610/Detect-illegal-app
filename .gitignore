@@ -1,0 +1,61 @@
+# ---------- Python ----------
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+# pytest.ini 把 basetemp 指向项目内，避免 %TEMP% 权限问题
+tmp/pytest-run/
+
+# ---------- Node ----------
+node_modules/
+dist/
+
+# ---------- 运行期数据（数据库、APK、证据、导出、日志） ----------
+data/
+*.db
+.enc
+data/fernet.key
+
+# ---------- 密钥与本地配置（只提交 .env.example） ----------
+.env
+.env.local
+*.pem
+*.key
+
+# ---------- 客户交付物（真实检测报告，绝不入库） ----------
+app人工检测报告/
+AI驱动的App隐私合规自动化检测Agent设计方案.docx
+*.docx
+
+# ---------- 本地真实人工复核数据（含客户 App 名/包名），仓库只提交 *.example.yaml ----------
+agent/config/manual_baselines.yaml
+benchmarks/privacy_benchmark.yaml
+
+# ---------- 临时产物 / 工具缓存 ----------
+tmp/
+.ua/
+.test-tmp/
+.playwright-cli/
+output/
+
+# ---------- IDE / OS ----------
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# ---------- 本地 AI / IDE 工作目录 ----------
+.claude/
+.worktrees/
+.workbuddy/
+.cursor/
+.mimosa/
+
+# ---------- Word 锁文件 ----------
+~$*
+
+# ---------- 大体积第三方二进制（本机自行下载） ----------
+tools/flowdroid/*.jar
+tools/tesseract/tessdata/*.traineddata

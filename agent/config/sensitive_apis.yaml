@@ -1,0 +1,60 @@
+# 动态监测只记录 API 元数据、时间与调用栈，不采集返回值或原始参数中的个人信息。
+# 按权限族覆盖常见系统接口；名单是开放增量，不是「仅名单内才算收集」。
+sensitive_apis:
+  - {id: device.device_id, class_name: android.telephony.TelephonyManager, method_name: getDeviceId, data_type: 设备标识信息}
+  - {id: device.imei, class_name: android.telephony.TelephonyManager, method_name: getImei, data_type: 设备标识信息}
+  - {id: device.subscriber_id, class_name: android.telephony.TelephonyManager, method_name: getSubscriberId, data_type: IMSI}
+  - {id: device.sim_serial, class_name: android.telephony.TelephonyManager, method_name: getSimSerialNumber, data_type: 设备标识信息}
+  - {id: device.meid, class_name: android.telephony.TelephonyManager, method_name: getMeid, data_type: 设备标识信息}
+  - {id: device.network_operator, class_name: android.telephony.TelephonyManager, method_name: getNetworkOperator, data_type: 网络与设备信息}
+  - {id: device.network_operator_name, class_name: android.telephony.TelephonyManager, method_name: getNetworkOperatorName, data_type: 网络与设备信息}
+  - {id: phone.line_number, class_name: android.telephony.TelephonyManager, method_name: getLine1Number, data_type: 手机号码}
+  - id: device.android_id
+    class_name: android.provider.Settings$Secure
+    method_name: getString
+    data_type: 设备标识信息
+    argument_filter: {index: 1, contains: android_id}
+  - {id: clipboard.primary_clip, class_name: android.content.ClipboardManager, method_name: getPrimaryClip, data_type: 剪贴板信息}
+  - {id: location.updates, class_name: android.location.LocationManager, method_name: requestLocationUpdates, data_type: 位置信息}
+  - {id: location.last_known, class_name: android.location.LocationManager, method_name: getLastKnownLocation, data_type: 位置信息}
+  - {id: location.current, class_name: android.location.LocationManager, method_name: getCurrentLocation, data_type: 位置信息}
+  - {id: audio.media_recorder, class_name: android.media.MediaRecorder, method_name: start, data_type: 音频信息}
+  - {id: audio.recording, class_name: android.media.AudioRecord, method_name: startRecording, data_type: 音频信息}
+  - {id: camera.legacy_open, class_name: android.hardware.Camera, method_name: open, data_type: 图像信息}
+  - {id: camera.open, class_name: android.hardware.camera2.CameraManager, method_name: openCamera, data_type: 图像信息}
+  - {id: wifi.mac, class_name: android.net.wifi.WifiInfo, method_name: getMacAddress, data_type: 网络与设备信息}
+  - {id: wifi.ssid, class_name: android.net.wifi.WifiInfo, method_name: getSSID, data_type: 网络与设备信息}
+  - {id: wifi.bssid, class_name: android.net.wifi.WifiInfo, method_name: getBSSID, data_type: 网络与设备信息}
+  - {id: apps.installed_packages, class_name: android.content.pm.PackageManager, method_name: getInstalledPackages, data_type: 应用列表}
+  - {id: apps.installed_applications, class_name: android.content.pm.PackageManager, method_name: getInstalledApplications, data_type: 应用列表}
+  - {id: apps.query_activities, class_name: android.content.pm.PackageManager, method_name: queryIntentActivities, data_type: 应用列表}
+  - {id: apps.installed_packages_impl, class_name: android.app.ApplicationPackageManager, method_name: getInstalledPackages, data_type: 应用列表}
+  - {id: apps.installed_applications_impl, class_name: android.app.ApplicationPackageManager, method_name: getInstalledApplications, data_type: 应用列表}
+  - {id: account.accounts, class_name: android.accounts.AccountManager, method_name: getAccounts, data_type: 账号信息}
+  - {id: bluetooth.address, class_name: android.bluetooth.BluetoothAdapter, method_name: getAddress, data_type: 设备标识信息}
+  - {id: bluetooth.name, class_name: android.bluetooth.BluetoothAdapter, method_name: getName, data_type: 设备信息}
+  - {id: sensors.listener, class_name: android.hardware.SensorManager, method_name: registerListener, data_type: 传感器信息}
+  - {id: network.okhttp_execute, class_name: okhttp3.RealCall, method_name: execute, data_type: 网络传输行为}
+  - {id: network.okhttp_enqueue, class_name: okhttp3.RealCall, method_name: enqueue, data_type: 网络传输行为}
+  - id: ads.advertising_id
+    class_name: com.google.android.gms.ads.identifier.AdvertisingIdClient
+    method_name: getAdvertisingIdInfo
+    data_type: 设备标识信息
+  - id: content.query
+    class_name: android.content.ContentResolver
+    method_name: query
+    data_type: 系统数据访问
+    argument_filter:
+      index: 0
+      contains_any:
+        - contacts
+        - sms
+        - call_log
+        - calllog
+        - telephony
+        - mms
+        - icc
+        - media
+        - images
+        - video
+        - downloads

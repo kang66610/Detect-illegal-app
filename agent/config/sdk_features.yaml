@@ -1,0 +1,79 @@
+# SDK 特征库（V1.0 起步 ~20 个常见 SDK，后续扩充）
+# meta_keys: AndroidManifest meta-data 常见 key；permissions: 该 SDK 特征权限
+sdk_features:
+  - name: 高德地图
+    meta_keys: ["com.amap.api.v2.apikey"]
+    permissions: []
+    collected: ["定位信息"]
+  - name: 百度地图
+    meta_keys: ["com.baidu.lbsapi.API_KEY"]
+    permissions: []
+    collected: ["定位信息"]
+  - name: 友盟
+    meta_keys: ["UMENG_APPKEY"]
+    permissions: []
+    package_prefixes: ["com.umeng"]
+    collected: ["设备标识", "应用列表"]
+  - name: ShareSDK
+    meta_keys: ["Mob-AppKey", "Mob-AppSecret"]
+    permissions: []
+    package_prefixes: ["cn.sharesdk", "cn.fly.tools", "com.mob.tools", "com.mob."]
+    collected: ["设备标识"]
+  - name: 腾讯 Bugly
+    meta_keys: ["BUGLY_APPID", "TencentMapSDK"]
+    permissions: []
+    collected: ["设备标识", "崩溃日志"]
+  - name: 极光推送
+    meta_keys: ["JPUSH_APPKEY", "JPUSH_CHANNEL"]
+    permissions: []
+    collected: ["设备标识", "应用列表"]
+  - name: 个推
+    meta_keys: ["PUSH_APPID", "GETUI_APPID"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 微博 SDK
+    meta_keys: ["com.sina.weibo.sdk.APP_KEY"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 微信开放平台
+    meta_keys: ["WX_APPID", "com.tencent.mm.appid"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: QQ 互联
+    meta_keys: ["QQ_APPID"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 讯飞语音
+    meta_keys: ["appid_android", "IFLYTEK_APPKEY"]
+    permissions: []
+    package_prefixes: ["com.iflytek.cloud"]
+    collected: ["语音数据", "设备标识信息"]
+  - name: 声网 Agora
+    meta_keys: ["agora_app_id"]
+    permissions: ["android.permission.RECORD_AUDIO", "android.permission.CAMERA"]
+    collected: ["音视频数据"]
+  - name: 穿山甲/巨量引擎
+    meta_keys: ["TT_APPID", "BaiduMobAd_APP_ID"]
+    permissions: ["android.permission.ACCESS_FINE_LOCATION"]
+    collected: ["设备标识", "定位信息"]
+  - name: 腾讯广告
+    meta_keys: ["TencentAd"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 阿里推送
+    meta_keys: ["com.alibaba.app.appkey"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 阿里云用户反馈
+    meta_keys: []
+    permissions: []
+    package_prefixes: ["com.alibaba.sdk.android.feedback"]
+    collected: ["IMSI", "设备标识信息"]
+  - name: 华为 HMS
+    meta_keys: ["com.huawei.hms.client.appid"]
+    permissions: []
+    collected: ["设备标识"]
+  - name: 小米推送
+    meta_keys: ["XMPUSH_APPID", "XMPUSH_APPKEY"]
+    permissions: []
+    collected: ["设备标识"]

@@ -1,0 +1,39 @@
+# 危险权限与行业必要权限。已知行业：危险权限不在允许清单即触发 RULE_4_1。
+# 「通用」及未建基线的行业：只检查短信/通话记录类明显越权权限，避免误报。
+aliases:
+  金融理财: 金融
+  社交通讯: 社交
+never_ok_unless_listed:
+  - android.permission.READ_SMS
+  - android.permission.SEND_SMS
+  - android.permission.READ_CALL_LOG
+  - android.permission.PROCESS_OUTGOING_CALLS
+allowed:
+  通讯:
+    - android.permission.READ_CONTACTS
+    - android.permission.READ_SMS
+    - android.permission.SEND_SMS
+    - android.permission.READ_CALL_LOG
+    - android.permission.READ_PHONE_STATE
+    - android.permission.RECORD_AUDIO
+    - android.permission.CAMERA
+  社交:
+    - android.permission.READ_CONTACTS
+    - android.permission.CAMERA
+    - android.permission.RECORD_AUDIO
+    - android.permission.ACCESS_FINE_LOCATION
+    - android.permission.ACCESS_COARSE_LOCATION
+    - android.permission.READ_PHONE_STATE
+  金融:
+    - android.permission.CAMERA
+    - android.permission.READ_PHONE_STATE
+    - android.permission.RECORD_AUDIO
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.WRITE_EXTERNAL_STORAGE
+  工具:
+    - android.permission.CAMERA
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.WRITE_EXTERNAL_STORAGE
+  阅读:
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.WRITE_EXTERNAL_STORAGE

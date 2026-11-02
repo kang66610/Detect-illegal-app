@@ -1,0 +1,5 @@
+{"schema_version":1,"type":"header"}
+{"type":"scenario","item":"4.2","event":"permission_prompt","target":"头像","source":"permission_prompt_observed"}
+{"type":"scenario","item":"4.2","event":"permission_denied","target":"头像","source":"permission_response_deny"}
+{"type":"scenario","item":"4.2","event":"business_action_retried","target":"头像","source":"permission_denial_business_action_retried"}
+{"type":"scenario","item":"4.2","event":"function_blocked","target":"头像","source":"permission_denial_function_blocked"}

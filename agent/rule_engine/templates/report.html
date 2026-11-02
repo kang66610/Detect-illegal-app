@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>{{ report_no }} 检测报告</title>
+<style>
+  @page { size: A4; margin: 25.4mm 31.75mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: #111; font-family: "Microsoft YaHei", "SimSun", sans-serif; font-size: 14pt; line-height: 1.9; }
+  .page-break { break-before: page; page-break-before: always; }
+  .cover { min-height: 236mm; padding-top: 45mm; }
+  .cover h1 { margin: 0 0 30mm; text-align: center; font-size: 28pt; font-weight: 500; letter-spacing: 2pt; }
+  .cover dl { width: 100%; margin: 0; }
+  .cover .field { display: grid; grid-template-columns: 32mm 1fr; align-items: end; margin: 5mm 0; }
+  .cover dt { font-size: 15pt; }
+  .cover dd { min-height: 10mm; margin: 0; padding: 0 3mm 1.5mm; border-bottom: .6pt solid #222; text-align: center; font-size: 15pt; }
+  h1.doc-title { margin: 0 0 8mm; text-align: center; font-size: 22pt; line-height: 1.4; }
+  h2 { margin: 8mm 0 4mm; font-size: 16pt; }
+  h3 { margin: 9mm 0 4mm; font-size: 15pt; }
+  p { margin: 2.5mm 0; text-align: justify; }
+  .info { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12.5pt; line-height: 1.5; }
+  .info th, .info td { border: .7pt solid #222; padding: 2.5mm 3mm; overflow-wrap: anywhere; }
+  .info th { width: 24mm; text-align: center; font-weight: 700; }
+  .summary-lead { font-weight: 700; text-indent: 2em; }
+  .result-list { margin: 2mm 0 0; padding-left: 2em; }
+  .result-list li { padding-left: 1mm; }
+  .issue { margin-top: 8mm; }
+  .issue-title { text-align: center; font-size: 15pt; font-weight: 700; }
+  .label { margin-top: 5mm; font-weight: 700; }
+  .description { text-indent: 2em; }
+  .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5mm; align-items: start; margin: 3mm 0 5mm; }
+  .evidence-grid.one { grid-template-columns: minmax(0, 78mm); justify-content: start; }
+  .evidence-grid img { display: block; width: 100%; max-height: 142mm; object-fit: contain; break-inside: avoid; }
+  .evidence-note { margin: 2mm 0; padding: 2.5mm 3mm; background: #f5f5f5; font-size: 11pt; line-height: 1.6; break-inside: avoid; }
+  .suggestion { break-inside: avoid; }
+  .refs { margin: 3mm 0 0; padding-left: 2em; font-size: 12pt; }
+  .refs li { margin: 2.5mm 0; padding-left: 1mm; text-align: justify; }
+  .footer-note { margin-top: 8mm; color: #666; font-size: 9pt; text-align: center; }
+</style>
+</head>
+<body>
+<section class="cover">
+  <h1>检测报告</h1>
+  <dl>
+    <div class="field"><dt>软件名称：</dt><dd>{{ apk.app_name or apk.filename }}</dd></div>
+    <div class="field"><dt>软件版本：</dt><dd>{{ apk.version_name or '—' }}</dd></div>
+    <div class="field"><dt>受检单位：</dt><dd>{{ header.subject_org or '—' }}</dd></div>
+    <div class="field"><dt>检测单位：</dt><dd>{{ header.test_org or '—' }}</dd></div>
+    <div class="field"><dt>委托单位：</dt><dd>{{ header.entrust_org or '—' }}</dd></div>
+    <div class="field"><dt>检测时间：</dt><dd>{{ now.strftime('%Y-%m-%d') }}</dd></div>
+  </dl>
+</section>
+
+<section class="page-break">
+  <h1 class="doc-title">“{{ apk.app_name or apk.filename }}”个人信息合规检测报告</h1>
+  <h2>一、评估对象基本信息</h2>
+  <table class="info">
+    <tr><th>App 名称</th><td>{{ apk.app_name or '—' }}</td><th>版本</th><td>{{ apk.version_name or '—' }}</td></tr>
+    <tr><th>包名</th><td colspan="3">{{ apk.package_name or '—' }}</td></tr>
+    <tr><th>MD5 值</th><td colspan="3">{{ apk.md5 or '—' }}</td></tr>
+    <tr><th>下载渠道</th><td colspan="3">{{ header.download_channel or '—' }}</td></tr>
+    <tr><th>下载地址</th><td colspan="3">{{ header.download_url or '—' }}</td></tr>
+    <tr><th>运营者名称</th><td colspan="3">{{ header.subject_org or '—' }}</td></tr>
+  </table>
+
+  <h2>二、评估结果</h2>
+  {% set report_summary = summary|default({}, true) %}
+  {% set report_confidence = report_summary.report_confidence|default({}, true) %}
+  {% if report_confidence.status|default('final') == 'provisional' %}
+  <p class="summary-lead">本报告为覆盖受限的暂定结果，不提供最终合规评分：{{ report_confidence.reason|default('证据覆盖仍有限') }}。</p>
+  {% endif %}
+  {% if matched %}
+  <p class="summary-lead">{% if report_confidence.status|default('final') == 'provisional' %}在本次已形成完整证据链的覆盖范围内，{% else %}经过评估，{% endif %}“{{ apk.app_name or apk.filename }}”App 在处理个人信息活动以及个人信息保护的活动中，存在以下问题：</p>
+  <ol class="result-list">
+    {% for m in matched %}<li>{{ m.rule.rule_name }}</li>{% endfor %}
+  </ol>
+  {% else %}
+  <p class="summary-lead">本次自动检测未形成可支撑违规认定的完整证据；该结果不代表 App 合规。</p>
+  {% endif %}
+</section>
+
+{% for m in matched %}
+<section class="issue{% if loop.first %} page-break{% endif %}">
+  <h3 class="issue-title">（{{ cn_numbers[loop.index0] if loop.index0 < cn_numbers|length else loop.index }}）{{ m.rule.rule_name }}</h3>
+  <p class="label">问题描述：</p>
+  <p class="description">App 存在“{{ m.rule.rule_name }}”的情形，违反{{ m.rule.legal_basis }}。</p>
+  {% if m.screenshots %}
+  <p class="label">证据截图：</p>
+  <div class="evidence-grid{% if m.screenshots|length == 1 %} one{% endif %}">
+    {% for shot in m.screenshots %}<img src="{{ shot }}" alt="违规证据截图 {{ loop.index }}">{% endfor %}
+  </div>
+  {% endif %}
+  {% if m.evidence_items %}<p class="label">证据说明：</p>{% endif %}
+  {% for item in m.evidence_items|default([], true) %}
+  <div class="evidence-note"><b>{{ item.label }}：</b>{{ item.detail }}</div>
+  {% endfor %}
+  {% if not m.screenshots and not m.evidence_items %}
+  <div class="evidence-note"><b>证据说明：</b>{{ m.evidence_fallback|default('未取得可用截图；请结合页面和操作时间线核验该结论。', true) }}</div>
+  {% endif %}
+  <p class="suggestion"><b>修复建议：</b>{{ m.rule.suggestion }}</p>
+</section>
+{% endfor %}
+
+<section class="page-break">
+  <h2>三、评估参考范围</h2>
+  <ol class="refs">
+    <li>《中华人民共和国网络安全法》</li>
+    <li>《中华人民共和国个人信息保护法》</li>
+    <li>《个人信息保护合规审计管理办法》（国家互联网信息办公室令第18号）</li>
+    <li>《常见类型移动互联网应用程序必要个人信息范围规定》（国信办秘字〔2021〕14号）</li>
+    <li>《App违法违规收集使用个人信息行为认定方法》（国信办秘字〔2019〕191号）</li>
+    <li>《工业和信息化部关于开展纵深推进 App 侵害用户权益专项整治行动的通知》（工信部信管函〔2020〕164号）</li>
+    <li>《工业和信息化部关于进一步提升移动互联网应用服务能力的通知》（工信部信管函〔2023〕26号）</li>
+    <li>《工业和信息化部关于开展 App 侵害用户权益专项整治工作的通知》（工信部信管函〔2019〕337号）</li>
+    <li>《信息安全技术 个人信息安全规范》（GB/T 35273-2020）</li>
+    <li>《信息安全技术 移动互联网应用程序（App）收集个人信息基本要求》（GB/T 41391-2022）</li>
+    <li>《App 收集使用个人信息最小必要评估规范》（T/TAF 2020）</li>
+    <li>《移动互联网应用程序（App）用户权益保护测评规范》（YD/T 4184）</li>
+    <li>《移动智能终端与应用软件用户个人信息保护实施指南》（T/TAF 2020）</li>
+  </ol>
+  <p class="footer-note">报告编号：{{ report_no }}　由 App 隐私合规自动化检测平台生成</p>
+</section>
+</body>
+</html>

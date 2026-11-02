@@ -1,0 +1,35 @@
+version: 1
+reports:
+  - {report: "案例A-App违法违规收集使用个人信息.docx", package_name: "com.example.dating"}
+  - {report: "案例B-App违法违规收集使用个人信息检测.docx", package_name: "com.example.smarthome"}
+  - {report: "案例C-App违法违规收集使用个人信息检测.docx", package_name: "com.example.travel"}
+  - {report: "案例D-App违法违规收集使用个人信息检测报.docx", package_name: "com.example.news"}
+  - {report: "案例E-App违法违规收集使用个人信息检测.docx", package_name: "com.example.clinic"}
+  - {report: "案例F-App违法违规收集使用个人信息检.docx", package_name: "com.example.dialer"}
+  - {report: "案例G-App违法违规收集使用个人信息检测.docx", package_name: "com.example.writer"}
+  - {report: "案例H-App违法违规收集使用个人信息检.docx", package_name: "com.example.flowers"}
+  - {report: "案例I-App违法违规收集使用个人信息.docx", package_name: "com.example.recorder"}
+  - {report: "案例J-App违法违规收集使用个人信息.docx", package_name: "com.example.bank"}
+  - {report: "案例K-App违法违规收集使用个人信息检测报告.docx", package_name: "com.example.reader"}
+  - {report: "案例L-App违法违规收集使用个人信息检.docx", package_name: "com.example.dialer2"}
+  - {report: "案例M-App违法违规收集使用个人信息检测.docx", package_name: "com.example.appliance"}
+  - {report: "案例N-App违法违规收集使用个人信息检.docx", package_name: "com.example.learning"}
+  - {report: "案例O-App违法违规收集使用个人信息.docx", package_name: "com.example.driver"}
+  - {report: "案例P-App违法违规收集使用个人信息检测.docx", package_name: "com.example.classroom"}
+  - {report: "案例Q-App违法违规收集使用个人信.docx", package_name: "com.example.accelerator"}
+  - {report: "案例T-App违法违规收集使用个人信息检测报告.docx", package_name: "com.example.match"}
+  - {report: "案例R-App违法违规收集使用个人信息评估报.docx", package_name: "com.example.chat"}
+  - {report: "案例S-App违法违规收集使用个人信息检测报告.docx", package_name: "com.example.socialsecurity"}
+
+overrides:
+  com.example.travel: [RULE_2_1_SDK, RULE_2_2, RULE_4_1_CONSENT, RULE_4_2]
+  com.example.socialsecurity: [RULE_1_1, RULE_3_1, RULE_3_2]
+  com.example.reader: [RULE_4_2, RULE_3_8, RULE_2_1_SDK]
+  com.example.writer: [RULE_2_1, RULE_2_2, RULE_6_5]
+  com.example.flowers: [RULE_2_1_SDK, RULE_EXT_SENSITIVE_MARK, RULE_EXT_LOGIN_DATA_PROTECTION]
+
+timeline_paths:
+  com.example.travel:
+    - [[document_read_complete, external_document_read_complete], [privacy_consent_clicked], [permission_prompt_without_purpose], [permission_denial_business_action_retried], [permission_denial_function_blocked]]
+  com.example.flowers:
+    - [[document_read_complete, external_document_read_complete], [privacy_hub_entered, privacy_hub_target_selected], [login_invitation_followed, awaiting_manual_login], [permission_prompt_without_purpose]]

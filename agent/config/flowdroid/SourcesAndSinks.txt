@@ -1,0 +1,26 @@
+% Privacy-oriented starter definitions. Extend through reviewed, versioned changes.
+<android.telephony.TelephonyManager: java.lang.String getDeviceId()> -> _SOURCE_
+<android.telephony.TelephonyManager: java.lang.String getImei()> -> _SOURCE_
+<android.telephony.TelephonyManager: java.lang.String getSubscriberId()> -> _SOURCE_
+<android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()> -> _SOURCE_
+<android.telephony.TelephonyManager: java.lang.String getLine1Number()> -> _SOURCE_
+<android.telephony.TelephonyManager: java.lang.String getMeid()> -> _SOURCE_
+<android.location.Location: double getLatitude()> -> _SOURCE_
+<android.location.Location: double getLongitude()> -> _SOURCE_
+<android.location.LocationManager: android.location.Location getLastKnownLocation(java.lang.String)> -> _SOURCE_
+<android.provider.Settings$Secure: java.lang.String getString(android.content.ContentResolver,java.lang.String)> -> _SOURCE_
+<android.provider.Settings$System: java.lang.String getString(android.content.ContentResolver,java.lang.String)> -> _SOURCE_
+<android.net.wifi.WifiInfo: java.lang.String getMacAddress()> -> _SOURCE_
+<java.net.NetworkInterface: byte[] getHardwareAddress()> -> _SOURCE_
+<android.content.ClipboardManager: android.content.ClipData getPrimaryClip()> -> _SOURCE_
+<android.accounts.AccountManager: android.accounts.Account[] getAccounts()> -> _SOURCE_
+<android.content.ContentResolver: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)> -> _SOURCE_
+<android.content.ContentResolver: android.database.Cursor query(android.net.Uri,java.lang.String[],android.os.Bundle,android.os.CancellationSignal)> -> _SOURCE_
+<java.net.URLConnection: void connect()> -> _SINK_
+<java.net.URLConnection: java.io.OutputStream getOutputStream()> -> _SINK_
+<java.io.OutputStream: void write(byte[])> -> _SINK_
+<java.io.OutputStream: void write(byte[],int,int)> -> _SINK_
+<java.net.Socket: java.io.OutputStream getOutputStream()> -> _SINK_
+<android.webkit.WebView: void loadUrl(java.lang.String)> -> _SINK_
+<android.webkit.WebView: void postUrl(java.lang.String,byte[])> -> _SINK_
+<okhttp3.RequestBody: void writeTo(okio.BufferedSink)> -> _SINK_
