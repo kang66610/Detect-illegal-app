@@ -1,4 +1,16 @@
-"""Known manual findings are regression baselines, never synthetic findings."""
+"""Known manual findings are regression baselines, never synthetic findings.
+
+两个数据源，优先级明确，不要混淆：
+
+- ``agent/config/manual_baselines.yaml``（本地私有，不入库）：真实人工复核基线，
+  由 :mod:`agent.rule_engine.manual_baseline_import` 加载后作为 ``imported`` 传入，
+  **始终优先**；
+- 下方的 ``BASELINES``：仓库内的最小离线固件，只在没有 yaml 时兜底
+  （干净 clone、CI、单元测试）。里面的包名与 App 名是脱敏占位，不是客户数据。
+
+``baseline_for_package`` 实现的就是 ``imported or BASELINES``——
+真实运行时永远走 yaml，硬编码这份只负责“没有本地数据也能跑”。
+"""
 from __future__ import annotations
 
 
