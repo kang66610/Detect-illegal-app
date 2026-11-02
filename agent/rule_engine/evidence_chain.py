@@ -1,18 +1,22 @@
 """Require cross-source evidence before emitting dynamic-data violations.
 
-Two admission modes are supported:
+Two admission modes are supported; the default is ``strict`` (see
+``backend/app/config.py`` → ``rule_engine.evidence_chain_mode``):
 
-- ``strict``: the original full chain — dynamic findings need a callstack, a
-  time-correlated behavior ledger and (for SDK findings) a consistency
-  matrix; UI findings need a screenshot, a timeline entry and the rule's
-  semantic condition.  Used by regression tests and by auditors who want
-  the highest evidentiary bar.
-- ``lenient`` (production default): one core artifact is enough.  Dynamic
-  findings are admitted with a callstack *or* a time-correlated behavior
-  ledger; UI findings are admitted with the rule's semantic condition plus
-  at least one UI artifact (screenshot or timeline).  Whatever is still
-  missing is recorded as an advisory ``notes`` entry instead of a
-  downgrade, so the report keeps showing the real evidence depth.
+- ``strict`` (default): the original full chain — dynamic findings need a
+  callstack, a time-correlated behavior ledger and (for SDK findings) a
+  consistency matrix; UI findings need a screenshot, a timeline entry and the
+  rule's semantic condition.
+- ``lenient``: one core artifact is enough.  Dynamic findings are admitted
+  with a callstack *or* a time-correlated behavior ledger; UI findings are
+  admitted with the rule's semantic condition plus at least one UI artifact
+  (screenshot or timeline).  Whatever is still missing is recorded as an
+  advisory ``notes`` entry instead of a downgrade, so the report keeps showing
+  the real evidence depth.
+
+``lenient`` must be requested explicitly via ``PRIVACY_EVIDENCE_CHAIN_MODE``.
+It is not a production default: loosening admission silently would make the
+report claim violations on thinner evidence than the README promises.
 """
 from __future__ import annotations
 

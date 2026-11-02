@@ -1,0 +1,44 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install ruff==0.17.3
+
+      # 只卡“真正会崩”的静态问题。F401 在本仓库有大量有意为之的
+      # facade re-export，交给 check_import_contracts.py 判断，不交给 ruff。
+      - name: Static checks (undefined names, redefinitions, dead locals)
+        run: ruff check agent backend worker scripts --select F821,F811,F841,E9
+
+      # 删未使用导入时最容易打断别处的 re-export，这条先于测试跑。
+      - name: Import contract
+        run: python scripts/check_import_contracts.py
+
+      # 覆盖审计文档必须与规则库/证据链同源，手改过的数字在这里会被抓出来。
+      - name: Coverage audit is in sync with code
+        run: python scripts/generate_coverage_audit.py --check
+
+      - name: Install Playwright chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run tests
+        run: python -m pytest -q

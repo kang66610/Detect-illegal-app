@@ -28,10 +28,12 @@ backend/                FastAPI 服务
 
 worker/                 SQLite 队列轮询 + 设备锁，一台设备同时只跑一个任务
 frontend/               Vue3 + Element Plus（上传 / 进度 / 报告三页）
-scripts/                API/Worker 启动、Appium 启动、基准评估、导入契约校验
-benchmarks/             人工复核结论清单（脱敏版，真实清单在本地 data/）
+scripts/                API/Worker 启动、Appium 启动、基准评估、
+                        覆盖审计生成（generate_coverage_audit.py）、导入契约校验
+benchmarks/             人工复核结论清单（仓库内为脱敏示例，真实清单在本地 data/）
 docs/                   法规原文、PRD、设计与实施计划
 data/                   运行期数据：数据库、加密 APK、证据、报告（不入库）
+.github/workflows/      CI：静态检查 + 导入契约 + 覆盖审计同步 + 全量测试
 ```
 
 ## 本地配置
@@ -64,6 +66,25 @@ cd frontend && npm install && npm run dev
 
 生产前端：`cd frontend && npm run build` 后由 API 服务直接托管，访问 http://127.0.0.1:8000
 
+## 能测什么、不能测什么
+
+《认定方法》六大类共 31 项具体情形。当前 **21 项可自动判定**，其余 10 项没有自动规则，
+报告里显示为「未覆盖」，并写明是不能自动定性（如规则可读性、晦涩难懂）还是必须依赖
+服务端/人工取证（如后台二次提供、删除工单记录）。
+
+这份覆盖表**由代码生成**，不是手写文档：
+
+```powershell
+.venv\Scripts\python scripts\generate_coverage_audit.py          # 重新生成
+.venv\Scripts\python scripts\generate_coverage_audit.py --check  # 校验是否与代码一致
+```
+
+生成结果见 [docs/legal/认定方法-自动化覆盖审计.md](docs/legal/认定方法-自动化覆盖审计.md)。
+规则库、证据链或法条目录一改，`pytest` 里的同步测试会立刻失败，逼你重新生成——
+这样对外说的话永远和代码一致。
+
+「未覆盖」不等于合规，也不等于违规；只有真跑过对应场景才谈得上结论。
+
 ## 测试
 
 ```powershell
@@ -73,13 +94,20 @@ cd frontend && npm install && npm run dev
 
 ### 企业级准确率门禁
 
-人工复核结论保存在 `benchmarks/privacy_benchmark.yaml`，不会被注入自动报告。
+人工复核结论保存在本地 `benchmarks/privacy_benchmark.yaml`（不入库，仓库中是脱敏的
+`privacy_benchmark.example.yaml`），不会被注入自动报告。
 同一 APK 至少重复检测 3 次，再以人工结论召回率、禁止误报命中数、结果稳定率和
 认定方法条款覆盖率共同决定门禁。缺 APK 的人工报告只保存标签并标记
 `artifact_missing`，不会参与门禁或制造虚假的通过率。
 
+**样本量会被显式报告**：可执行样本少于 `quality_gate.minimum_executable_cases`
+（默认 5）时，脚本输出 `verdict: insufficient_sample`、`conclusive: false`，
+并在 stderr 写明“指标只能用于发现退化，不能宣称召回率/精确率达标”。
+5 个样本全对，真实召回率的 95% 下限也只有约 0.48——门禁可以防退化，但不足以证明质量。
+
 ```powershell
 .venv\Scripts\python scripts\evaluate_benchmarks.py `
+  --manifest benchmarks\privacy_benchmark.yaml `
   --results data\benchmark-runs `
   --output data\benchmark-summary.json
 ```

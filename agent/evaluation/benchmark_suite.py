@@ -6,6 +6,11 @@ from collections import Counter
 
 import yaml
 
+# 少于这个数量，召回率/精确率的置信区间宽到没有决策价值：
+# 5 个样本全对时，真实召回率的 95% 下界也只有约 0.48。
+# 门禁可以用更小的样本发现“明显退化”，但不能用它宣称“质量达标”。
+DEFAULT_MIN_EXECUTABLE_CASES = 5
+
 
 @dataclass(frozen=True)
 class BenchmarkCase:
@@ -65,13 +70,38 @@ def evaluate_case(case: BenchmarkCase, runs: list[dict]) -> dict:
     }
 
 
-def evaluate_suite(cases: list[BenchmarkCase], run_results: dict[str, list[dict]]) -> dict:
+def sample_adequacy(executable_cases: int, minimum: int = DEFAULT_MIN_EXECUTABLE_CASES) -> dict:
+    """Say out loud whether the sample can support a precision/recall claim."""
+    adequate = executable_cases >= minimum
+    if adequate:
+        note = f"{executable_cases} 个可执行样本，可支撑门禁结论"
+    else:
+        note = (
+            f"仅 {executable_cases} 个可执行样本（至少需要 {minimum} 个），"
+            "指标只能用于发现明显退化，不足以宣称召回率/精确率达标"
+        )
+    return {
+        "executable_cases": executable_cases,
+        "required_minimum": minimum,
+        "adequate": adequate,
+        "note": note,
+    }
+
+
+def evaluate_suite(
+    cases: list[BenchmarkCase],
+    run_results: dict[str, list[dict]],
+    minimum_executable_cases: int = DEFAULT_MIN_EXECUTABLE_CASES,
+) -> dict:
     """Evaluate a persistent regression suite without hard-coding one App.
 
     ``run_results`` is deliberately an adapter boundary: CI, a real-device
     farm, or a manually captured run can provide the same compact evidence
     summary.  Cases without an APK artifact stay visible as labelled debt and
     do not fabricate executable results.
+
+    ``sample_adequacy`` is reported alongside the metrics so nobody quotes a
+    recall number derived from two Apps as if it were a quality guarantee.
     """
     executable = [case for case in cases if case.executable]
     results = [evaluate_case(case, run_results.get(case.case_id, [])) for case in executable]
@@ -80,9 +110,11 @@ def evaluate_suite(cases: list[BenchmarkCase], run_results: dict[str, list[dict]
         if result["recall"] < 1.0 or result["forbidden_hits"] or not result["stable"]
     ]
     leave_one_out = leave_one_out_recalls(executable, run_results)
+    adequacy = sample_adequacy(len(executable), minimum_executable_cases)
     return {
         "executable_cases": len(executable),
         "label_only_cases": len(cases) - len(executable),
+        "sample_adequacy": adequacy,
         "results": results,
         "macro_recall": sum(result["recall"] for result in results) / len(results) if results else None,
         "macro_precision": sum(result["precision"] for result in results) / len(results) if results else None,

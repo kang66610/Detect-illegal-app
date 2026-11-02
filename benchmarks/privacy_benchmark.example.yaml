@@ -3,6 +3,8 @@ description: >-
   企业级回归基准清单。expected_rule_ids 仅来自人工报告明确结论；
   不把人工结论注入自动报告。缺少隔离 APK 的样本只保存标签，不参与门禁。
 quality_gate:
+  # 少于该数量的可执行样本时，指标只能用于发现退化，不能宣称质量达标
+  minimum_executable_cases: 5
   minimum_recall: 0.90
   minimum_precision: 0.80
   maximum_forbidden_hits: 0

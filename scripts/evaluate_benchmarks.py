@@ -7,7 +7,12 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from agent.evaluation.benchmark_suite import evaluate_case, evaluate_suite, load_benchmark_cases
+from agent.evaluation.benchmark_suite import (
+    DEFAULT_MIN_EXECUTABLE_CASES,
+    evaluate_case,
+    evaluate_suite,
+    load_benchmark_cases,
+)
 
 
 def main() -> int:
@@ -51,17 +56,44 @@ def main() -> int:
             failures.append(f"{case.case_id}: required_coverage={summary['required_coverage_rate']:.3f}")
         if summary["precision"] < float(gate.get("minimum_precision", 0)):
             failures.append(f"{case.case_id}: precision={summary['precision']:.3f}")
-    suite = evaluate_suite(evaluated_cases, run_results)
+    suite = evaluate_suite(
+        evaluated_cases, run_results,
+        minimum_executable_cases=int(
+            gate.get("minimum_executable_cases", DEFAULT_MIN_EXECUTABLE_CASES)
+        ),
+    )
     if suite.get("macro_recall") is not None and suite["macro_recall"] < float(gate.get("minimum_macro_recall", 0)):
         failures.append(f"suite: macro_recall={suite['macro_recall']:.3f}")
     held_out = suite.get("minimum_held_out_recall")
     if held_out is not None and held_out < float(gate.get("minimum_held_out_recall", 0)):
         failures.append(f"suite: minimum_held_out_recall={held_out:.3f}")
+
+    adequacy = suite.get("sample_adequacy") or {}
+    if failures:
+        verdict = "regression_detected"
+    elif adequacy.get("adequate"):
+        verdict = "passed"
+    else:
+        # 没发现退化 ≠ 质量达标：样本太少时只能说“没退步”。
+        verdict = "insufficient_sample"
+    conclusive = verdict in {"passed", "regression_detected"}
+
     output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({
         "cases": summaries, "suite": suite, "skipped": skipped, "failures": failures,
         "gate_passed": not failures,
+        "verdict": verdict,
+        "conclusive": conclusive,
+        "sample_note": adequacy.get("note", ""),
     }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    if verdict == "insufficient_sample":
+        print(f"[样本不足] {adequacy.get('note', '')}", file=sys.stderr)
+        print("本次结果只证明“未发现退化”，不能作为质量达标结论对外引用。", file=sys.stderr)
+    elif verdict == "regression_detected":
+        print(f"[门禁未通过] {len(failures)} 项：{'；'.join(failures[:5])}", file=sys.stderr)
+    else:
+        print(f"[门禁通过] {adequacy.get('note', '')}")
     return 1 if failures else 0
 
 

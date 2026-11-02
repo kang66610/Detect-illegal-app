@@ -801,9 +801,10 @@ def run_task(task_id: int) -> None:
                     # Preserve a decision for every candidate before the
                     # admission gate removes incomplete chains.  This is
                     # operational audit data, not a violation list.
-                    # 证据链准入口径走配置（默认 lenient，可用
-                    # PRIVACY_EVIDENCE_CHAIN_MODE=strict 恢复严格门禁）。
-                    chain_mode = str((ctx.cfg.get("rule_engine") or {}).get("evidence_chain_mode") or "lenient")
+                    # 证据链准入口径走配置，默认 strict（与 config.py 一致）；
+                    # 需要放宽时显式设置 PRIVACY_EVIDENCE_CHAIN_MODE=lenient，
+                    # 不要把宽松当成隐式默认——报告的可信度取决于这里。
+                    chain_mode = str((ctx.cfg.get("rule_engine") or {}).get("evidence_chain_mode") or "strict")
                     ctx.runtime["evidence_chain_adjudication"] = build_evidence_chain_adjudication(
                         findings, evidence_files, strict_ui=True, mode=chain_mode,
                     )
